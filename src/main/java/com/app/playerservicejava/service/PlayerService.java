@@ -26,6 +26,12 @@ public class PlayerService {
         return players;
     }
 
+    public Player addPlayer(Player player) {
+        var savedPlayer = playerRepository.save(player);
+        LOGGER.info("Added player to DB: {}", savedPlayer);
+        return savedPlayer;
+    }
+
     public Players getPlayerPage(int pageNum, int size, String sortBy, String orderBy) {
         PageRequest request = PageRequest.of(
                 pageNum,

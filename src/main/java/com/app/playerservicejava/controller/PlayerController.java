@@ -4,7 +4,7 @@ import com.app.playerservicejava.model.Player;
 import com.app.playerservicejava.model.Players;
 import com.app.playerservicejava.service.PlayerService;
 import jakarta.annotation.Resource;
-import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Pattern;
@@ -39,17 +39,47 @@ public class PlayerController {
         return ok(players);
     }
 
+    @PostMapping
+    public ResponseEntity<Player> addPlayer(@Valid @RequestBody PlayerRequest playerRequest) {
+        Player player = mapRequestToModel(playerRequest);
+        var savedPlayer = playerService.addPlayer(player);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedPlayer);
+    }
+
+    private Player mapRequestToModel(@Valid PlayerRequest playerRequest) {
+        Player player = new Player();
+        player.setBirthCity(playerRequest.getBirthCity());
+        player.setBats(playerRequest.getBats());
+        player.setBbrefId(playerRequest.getBbrefId());
+        player.setBirthCountry(playerRequest.getBirthCountry());
+        player.setBirthDay(playerRequest.getBirthDay());
+        player.setBirthMonth(playerRequest.getBirthMonth());
+        player.setBirthState(playerRequest.getBirthState());
+        player.setBirthYear(playerRequest.getBirthYear());
+        player.setDeathCity(playerRequest.getDeathCity());
+        player.setDeathDay(playerRequest.getDeathDay());
+        player.setDeathCountry(playerRequest.getDeathCountry());
+        player.setDeathState(playerRequest.getDeathState());
+        player.setDeathMonth(playerRequest.getDeathMonth());
+        player.setDeathYear(playerRequest.getDeathYear());
+        player.setDebut(playerRequest.getDebut());
+        player.setBbrefId(playerRequest.getBbrefId());
+        player.setFinalGame(playerRequest.getFinalGame());
+        player.setFirstName(playerRequest.getFirstName());
+        player.setLastName(playerRequest.getLastName());
+        player.setWeight(playerRequest.getWeight());
+        player.setHeight(playerRequest.getHeight());
+        player.setRetroId(playerRequest.getRetroId());
+        player.setThrowStats(playerRequest.getThrowStats());
+        return player;
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<Player> getPlayerById(@PathVariable("id") String id) {
         Optional<Player> player = playerService.getPlayerById(id);
 
         return player.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
-    }
-
-    @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<String> handleIllegalArguments(ConstraintViolationException exc) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exc.getMessage());
     }
 
 }

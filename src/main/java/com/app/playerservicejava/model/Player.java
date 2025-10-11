@@ -1,9 +1,11 @@
 package com.app.playerservicejava.model;
 
 import jakarta.persistence.*;
+import lombok.ToString;
 
 @Entity
-@Table(name="PLAYERS")
+@Table(name = "PLAYERS")
+@ToString
 public class Player {
 
     @Id
@@ -80,7 +82,8 @@ public class Player {
     @Column(name = "BBREFID")
     private String bbrefId;
 
-    public Player() {}
+    public Player() {
+    }
 
     public String getPlayerId() {
         return playerId;
