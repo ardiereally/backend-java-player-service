@@ -6,6 +6,8 @@ import com.app.playerservicejava.repository.PlayerRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -24,18 +26,27 @@ public class PlayerService {
         return players;
     }
 
-    public Optional<Player> getPlayerById(String playerId) {
-        Optional<Player> player = null;
+    public Players getPlayerPage(int pageNum, int size, String sortBy, String orderBy) {
+        PageRequest request = PageRequest.of(
+                pageNum,
+                size,
+                "asc".equalsIgnoreCase(orderBy) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending()
+        );
+        Players players = new Players();
+        playerRepository.findAll(request).forEach(players.getPlayers()::add);
+        return players;
+    }
 
+    public Optional<Player> getPlayerById(String playerId) {
         /* simulated network delay */
         try {
-            player = playerRepository.findById(playerId);
-            Thread.sleep((long)(Math.random() * 2000));
+            Optional<Player> player = playerRepository.findById(playerId);
+            Thread.sleep((long) (Math.random() * 2000));
+            return player;
         } catch (Exception e) {
             LOGGER.error("message=Exception in getPlayerById; exception={}", e.toString());
-            return Optional.empty();
         }
-        return player;
+        return Optional.empty();
     }
 
 }
