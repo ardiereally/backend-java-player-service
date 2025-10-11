@@ -9,17 +9,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.List;
 
 @Controller
-@RequestMapping(value = "v1/chat", produces = { MediaType.APPLICATION_JSON_VALUE })
+@RequestMapping(value = "v1/chat", produces = {MediaType.APPLICATION_JSON_VALUE})
 public class ChatController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ChatController.class);
@@ -28,8 +25,8 @@ public class ChatController {
     private ChatClientService chatClientService;
 
     @PostMapping
-    public @ResponseBody String chat() throws OllamaBaseException, IOException, InterruptedException {
-        return chatClientService.chat();
+    public @ResponseBody String chat(@RequestBody String prompt) throws OllamaBaseException, IOException, InterruptedException {
+        return chatClientService.chat(prompt);
     }
 
     @GetMapping("/list-models")

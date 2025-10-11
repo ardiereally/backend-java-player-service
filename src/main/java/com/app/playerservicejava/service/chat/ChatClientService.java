@@ -5,12 +5,14 @@ import io.github.ollama4j.exceptions.OllamaBaseException;
 import io.github.ollama4j.models.Model;
 import io.github.ollama4j.models.OllamaResult;
 import io.github.ollama4j.types.OllamaModelType;
+import io.github.ollama4j.utils.OptionsBuilder;
+import io.github.ollama4j.utils.PromptBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
-import io.github.ollama4j.utils.OptionsBuilder;
-import io.github.ollama4j.utils.PromptBuilder;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -28,13 +30,18 @@ public class ChatClientService {
         return models;
     }
 
-    public String chat() throws OllamaBaseException, IOException, InterruptedException {
+    @Retryable(
+            maxAttempts = 2,
+            backoff = @Backoff(delay = 500L, multiplier = 2),
+            retryFor = Exception.class
+    )
+    public String chat(String prompt) throws OllamaBaseException, IOException, InterruptedException {
         String model = OllamaModelType.TINYLLAMA;
 
         // https://ollama4j.github.io/ollama4j/intro
         PromptBuilder promptBuilder =
                 new PromptBuilder()
-                        .addLine("Recite a haiku about recursion.");
+                        .addLine(prompt);
 
         boolean raw = false;
         OllamaResult response = ollamaAPI.generate(model, promptBuilder.build(), raw, new OptionsBuilder().build());

@@ -135,5 +135,13 @@ class PlayerServiceJavaApplicationTests {
         assertTrue(addedPlayer.getStatusCode().is4xxClientError());
     }
 
+    @Test
+    public void testChatApi() {
+        ResponseEntity<String> response = rest.postForEntity("/v1/chat", "What's einsteins birthday?", String.class);
+
+        assertTrue(response.getStatusCode().is2xxSuccessful());
+        assertNotNull(response.getBody());
+        assertFalse(response.getBody().isEmpty());
+    }
 
 }
