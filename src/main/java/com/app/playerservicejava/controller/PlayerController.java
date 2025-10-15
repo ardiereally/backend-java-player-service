@@ -46,6 +46,14 @@ public class PlayerController {
         return ResponseEntity.status(HttpStatus.CREATED).body(savedPlayer);
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<Player> updatePlayer(@PathVariable("id") String id,
+                                               @Valid @RequestBody PlayerRequest playerRequest) {
+        Player player = mapRequestToModel(playerRequest);
+        var savedPlayer = playerService.updatePlayer(id, player);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedPlayer);
+    }
+
     private Player mapRequestToModel(@Valid PlayerRequest playerRequest) {
         Player player = new Player();
         player.setBirthCity(playerRequest.getBirthCity());

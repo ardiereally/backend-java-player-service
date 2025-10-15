@@ -1,14 +1,18 @@
 package com.app.playerservicejava.service;
 
+import com.app.playerservicejava.exceptions.PlayerNotFoundException;
 import com.app.playerservicejava.model.Player;
 import com.app.playerservicejava.model.Players;
 import com.app.playerservicejava.repository.PlayerRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -43,6 +47,7 @@ public class PlayerService {
         return players;
     }
 
+    @Cacheable(cacheNames = "players", key = "#playerId")
     public Optional<Player> getPlayerById(String playerId) {
         /* simulated network delay */
         try {
@@ -55,4 +60,14 @@ public class PlayerService {
         return Optional.empty();
     }
 
+    @CacheEvict(cacheNames = "players", key = "#id")
+    @Transactional
+    public Player updatePlayer(String id, Player player) {
+        Optional<Player> playerToUpdate = getPlayerById(id);
+        if (playerToUpdate.isEmpty()) {
+            throw new PlayerNotFoundException("No player found by ID " + id);
+        }
+        player.setPlayerId(id);
+        return playerRepository.saveAndFlush(player);
+    }
 }
