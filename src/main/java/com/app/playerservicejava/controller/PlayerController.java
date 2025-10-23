@@ -42,7 +42,7 @@ public class PlayerController {
     @PostMapping
     public ResponseEntity<Player> addPlayer(@Valid @RequestBody PlayerRequest playerRequest) {
         Player player = mapRequestToModel(playerRequest);
-        var savedPlayer = playerService.addPlayer(player);
+        Player savedPlayer = playerService.addPlayer(player);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedPlayer);
     }
 
@@ -50,7 +50,7 @@ public class PlayerController {
     public ResponseEntity<Player> updatePlayer(@PathVariable("id") String id,
                                                @Valid @RequestBody PlayerRequest playerRequest) {
         Player player = mapRequestToModel(playerRequest);
-        var savedPlayer = playerService.updatePlayer(id, player);
+        Player savedPlayer = playerService.updatePlayer(id, player);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedPlayer);
     }
 
